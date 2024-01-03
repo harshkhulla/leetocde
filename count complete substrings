@@ -1,0 +1,61 @@
+class Solution {
+    public int countCompleteSubstrings(String word, int k) {
+        int i = 0;
+        int res = 0;
+        while (i < word.length()) {
+            int j = i+1;
+            while (j < word.length() && Math.abs(word.charAt(j)-word.charAt(j-1)) < 3) {
+                j++;
+            }
+            res += calc(i, j-1, k, word);
+            i = j;
+        }
+        
+        return res;
+    }
+    
+    public int calc(int start, int end, int k, String word) {
+        int res = 0;
+        for (int i = 1; i <= 26; i++) {
+            int length = i*k;
+            if (length > (end-start+1)) {
+                break;
+            }
+
+            int[] count = new int[26];
+            int l = start;
+            int r = l;
+            HashSet<Integer> errors = new HashSet<>();
+
+            while (r <= end) {
+                int c = word.charAt(r)-'a';
+                count[c]++;
+                if (count[c] == k) {
+                    errors.remove(c);                    
+                } else {
+                    errors.add(c);
+                }
+                r++;
+                int currL = r - l;
+                if (currL < length) {
+                    continue;
+                }
+                if (currL > length) {
+                    c = word.charAt(l)-'a';
+                    count[c]--; 
+                    if (count[c] == k || count[c] == 0) {
+                        errors.remove(c);                    
+                    } else {
+                        errors.add(c);
+                    }
+                    l++;
+                }
+
+                if (errors.isEmpty()) {
+                    res++;
+                }
+            }
+        }
+        return res;
+    }
+}
